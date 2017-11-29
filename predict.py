@@ -31,7 +31,7 @@ modelFN = modelFns[ model_name ]
 m = modelFN( n_classes , input_height=input_height, input_width=input_width   )
 m.load_weights(  args.save_weights_path + "." + str(  epoch_number )  )
 m.compile(loss='categorical_crossentropy',
-      optimizer= 'adadelta' ,
+      optimizer= 'sgd' ,
       metrics=['accuracy'])
 
 
@@ -49,11 +49,12 @@ for imgName in images:
 	X = LoadBatches.getImageArr(imgName , args.input_width  , args.input_height  )
 	pr = m.predict( np.array([X]) )[0]
 	pr = pr.reshape(( output_height ,  output_width , n_classes ) ).argmax( axis=2 )
-	seg_img = np.zeros( ( output_height , output_width , 3  ) )
-	for c in range(n_classes):
-		seg_img[:,:,0] += ( (pr[:,: ] == c )*( colors[c][0] )).astype('uint8')
-		seg_img[:,:,1] += ((pr[:,: ] == c )*( colors[c][1] )).astype('uint8')
-		seg_img[:,:,2] += ((pr[:,: ] == c )*( colors[c][2] )).astype('uint8')
-	seg_img = cv2.resize(seg_img  , (input_width , input_height ))
-	cv2.imwrite(  outName , seg_img )
+	#seg_img = np.zeros( ( output_height , output_width , 3  ) )
+	#for c in range(n_classes):
+	#	seg_img[:,:,0] += ( (pr[:,: ] == c )*( colors[c][0] )).astype('uint8')
+	#	seg_img[:,:,1] += ((pr[:,: ] == c )*( colors[c][1] )).astype('uint8')
+	#	seg_img[:,:,2] += ((pr[:,: ] == c )*( colors[c][2] )).astype('uint8')
+	#seg_img = cv2.resize(seg_img  , (input_width , input_height ))
+
+	cv2.imwrite(  outName , pr )
 

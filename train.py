@@ -18,10 +18,10 @@ parser.add_argument("--val_annotations", type = str , default = "")
 parser.add_argument("--epochs", type = int, default = 33 )
 parser.add_argument("--batch_size", type = int, default = 2 )
 parser.add_argument("--val_batch_size", type = int, default = 2 )
-parser.add_argument("--load_weights", type = str , default = "")
+parser.add_argument("--load_weights", type = str , default = "data/vgg16_weights_th_dim_ordering_th_kernels.h5")
 
 parser.add_argument("--model_name", type = str , default = "")
-parser.add_argument("--optimizer_name", type = str , default = "adadelta")
+parser.add_argument("--optimizer_name", type = str , default = "sgd")
 
 
 args = parser.parse_args()
@@ -55,7 +55,7 @@ m.compile(loss='categorical_crossentropy',
 
 
 if len( load_weights ) > 0:
-	m.load_weights(load_weights)
+	m.load_weights(load_weights, by_name=True)
 
 
 print "Model output shape" ,  m.output_shape

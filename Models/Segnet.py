@@ -1,4 +1,4 @@
-
+from keras.layers.merge import Add
 from keras.models import Model
 from keras.layers import Reshape
 from keras.layers import Input
@@ -35,23 +35,27 @@ def segnet(nClasses, optimizer=None, input_height=360, input_width=480):
     x = Convolution2D(filter_size, (kernel, kernel), padding='valid')(x)
     x = BatchNormalization()(x)
     x = Activation('relu') (x)
+    l1 = x
     x = MaxPooling2D(pool_size=(pool_size, pool_size))(x)
 
     x = ZeroPadding2D(padding=(pad, pad))(x)
     x = Convolution2D(128, (kernel, kernel), padding='valid')(x)
     x = BatchNormalization()(x)
     x = Activation('relu')(x)
+    l2 = x
     x = MaxPooling2D(pool_size=(pool_size, pool_size))(x)
 
     x = ZeroPadding2D(padding=(pad, pad))(x)
     x = Convolution2D(256, (kernel, kernel), padding='valid')(x)
     x = BatchNormalization()(x)
     x = Activation('relu')(x)
+    l3 = x
     x = MaxPooling2D(pool_size=(pool_size, pool_size))(x)
 
     x = ZeroPadding2D(padding=(pad, pad))(x)
     x = Convolution2D(512, (kernel, kernel), padding='valid')(x)
     x = BatchNormalization()(x)
+    l4 = x
     x = Activation('relu')(x)
 
 
@@ -62,32 +66,26 @@ def segnet(nClasses, optimizer=None, input_height=360, input_width=480):
     x = Convolution2D(512, (kernel, kernel), padding='valid')(x)
     x = BatchNormalization()(x)
 
+    x = Add()([l4, x])
     x = UpSampling2D(size=(pool_size, pool_size))(x)
     x = ZeroPadding2D(padding=(pad, pad))(x)
     x = Convolution2D(256, (kernel, kernel), padding='valid')(x)
     x = BatchNormalization()(x)
 
+    x = Add()([l3, x])
     x = UpSampling2D(size=(pool_size, pool_size))(x)
     x = ZeroPadding2D(padding=(pad, pad))(x)
     x = Convolution2D(128, (kernel, kernel), padding='valid')(x)
     x = BatchNormalization()(x)
 
+    x = Add()([l2, x])
     x = UpSampling2D(size=(pool_size, pool_size))(x)
     x = ZeroPadding2D(padding=(pad, pad))(x)
     x = Convolution2D(filter_size, (kernel, kernel), padding='valid')(x)
     x = BatchNormalization()(x)
 
+    x = Add()([l1, x])
     x = Convolution2D(nClasses, (1, 1), padding='valid') (x)
-
-
-
-  #  print a.outputWidth, a.outputHeight
-   # print a.output_shape
-
-    #x = Reshape((nClasses,  a.outputHeight *  a.outputWidth), input_shape=(nClasses, a.outputHeight, a.outputWidth)) (x)
-
-    #x = Permute((2, 1)) (x)
-    #out = Activation('softmax') (x)
 
     out = CrfRnnLayer(image_dims=(input_height, input_width),
                          num_classes=nClasses,
@@ -103,16 +101,12 @@ def segnet(nClasses, optimizer=None, input_height=360, input_width=480):
     a.outputHeight = a.output_shape[1]
     a.outputWidth = a.output_shape[2]
 
-    x = Reshape((a.outputHeight * a.outputWidth, nClasses), input_shape=(nClasses, a.outputHeight, a.outputWidth))(out)
-    out = Activation('softmax')(x)
+    out = Reshape((a.outputHeight * a.outputWidth, nClasses), input_shape=(nClasses, a.outputHeight, a.outputWidth))(out)
+    #out = Activation('softmax')(x)
 #    if not optimizer is None:
 #        model.compile(loss="categorical_crossentropy", optimizer=optimizer, metrics=['accuracy'])
     model = Model(inputs=img_input, outputs=out)
     model.outputHeight = a.outputHeight
     model.outputWidth = a.outputWidth
-
-
-
-#    model.compile(loss="categorical_crossentropy", optimizer=optimizer, metrics=['accuracy'])
 
     return model
