@@ -66,25 +66,25 @@ def segnet(nClasses, optimizer=None, input_height=360, input_width=480):
     x = Convolution2D(512, (kernel, kernel), padding='valid')(x)
     x = BatchNormalization()(x)
 
-    x = Add()([l4, x])
+#    x = Add()([l4, x])
     x = UpSampling2D(size=(pool_size, pool_size))(x)
     x = ZeroPadding2D(padding=(pad, pad))(x)
     x = Convolution2D(256, (kernel, kernel), padding='valid')(x)
     x = BatchNormalization()(x)
 
-    x = Add()([l3, x])
+ #   x = Add()([l3, x])
     x = UpSampling2D(size=(pool_size, pool_size))(x)
     x = ZeroPadding2D(padding=(pad, pad))(x)
     x = Convolution2D(128, (kernel, kernel), padding='valid')(x)
     x = BatchNormalization()(x)
 
-    x = Add()([l2, x])
+  #  x = Add()([l2, x])
     x = UpSampling2D(size=(pool_size, pool_size))(x)
     x = ZeroPadding2D(padding=(pad, pad))(x)
     x = Convolution2D(filter_size, (kernel, kernel), padding='valid')(x)
     x = BatchNormalization()(x)
 
-    x = Add()([l1, x])
+   # x = Add()([l1, x])
     x = Convolution2D(nClasses, (1, 1), padding='valid') (x)
 
     out = CrfRnnLayer(image_dims=(input_height, input_width),
@@ -92,7 +92,7 @@ def segnet(nClasses, optimizer=None, input_height=360, input_width=480):
                          theta_alpha=160.,
                          theta_beta=3.,
                          theta_gamma=3.,
-                         num_iterations=10,
+                         num_iterations=5,
                          name='crfrnn')([x, img_input])
 
     a = Model(inputs=img_input, outputs=out)
@@ -102,7 +102,7 @@ def segnet(nClasses, optimizer=None, input_height=360, input_width=480):
     a.outputWidth = a.output_shape[2]
 
     out = Reshape((a.outputHeight * a.outputWidth, nClasses), input_shape=(nClasses, a.outputHeight, a.outputWidth))(out)
-    #out = Activation('softmax')(x)
+    out = Activation('softmax')(out)
 #    if not optimizer is None:
 #        model.compile(loss="categorical_crossentropy", optimizer=optimizer, metrics=['accuracy'])
     model = Model(inputs=img_input, outputs=out)

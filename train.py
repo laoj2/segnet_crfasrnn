@@ -1,6 +1,15 @@
+import math
+from keras.callbacks import LearningRateScheduler, ModelCheckpoint
 import argparse
 import Models , LoadBatches
 
+# learning rate schedule
+def step_decay(epoch):
+	initial_lrate = 0.000001
+	drop = 0.5
+	epochs_drop = 10.0
+	lrate = initial_lrate * math.pow(drop, math.floor((1+epoch)/epochs_drop))
+	return lrate
 
 
 parser = argparse.ArgumentParser()
@@ -54,8 +63,15 @@ m.compile(loss='categorical_crossentropy',
       metrics=['accuracy'])
 
 
-if len( load_weights ) > 0:
-	m.load_weights(load_weights, by_name=True)
+#if len( load_weights ) > 0:
+#	m.load_weights(load_weights, by_name=True)
+
+
+lrate = LearningRateScheduler(step_decay)
+filepath="weights.best.hdf5"
+checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
+callbacks_list = [checkpoint]
+
 
 
 print "Model output shape" ,  m.output_shape
@@ -75,7 +91,7 @@ if not validate:
 		m.save_weights( save_weights_path + "." + str( ep ) )
 		m.save( save_weights_path + ".model." + str( ep ) )
 else:
-	for ep in range( epochs ):
-		m.fit_generator( G , 512  , validation_data=G2 , validation_steps=200 ,  epochs=1 )
-		m.save_weights( save_weights_path + "." + str( ep )  )
-		m.save( save_weights_path + ".model." + str( ep ) )
+#	for ep in range( epochs ):
+	m.fit_generator( G , 512  , validation_data=G2 , validation_steps=200 , callbacks=callbacks_list, epochs=500, verbose=1)
+#	m.save_weights( save_weights_path + "." + str( ep )  )
+#	m.save( save_weights_path + ".model." + str( ep ) )
