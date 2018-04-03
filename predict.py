@@ -25,11 +25,11 @@ input_width =  args.input_width
 input_height = args.input_height
 epoch_number = args.epoch_number
 
-modelFns = { 'vgg_segnet':Models.VGGSegnet.VGGSegnet , 'vgg_unet':Models.VGGUnet.VGGUnet , 'vgg_unet2':Models.VGGUnet.VGGUnet2 , 'fcn8':Models.FCN8.FCN8 , 'fcn32':Models.FCN32.FCN32, 'segnet':Models.Segnet.segnet   }
+modelFns = { 'vgg_segnet':Models.VGGSegnet.VGGSegnet , 'vgg_unet':Models.VGGUnet.VGGUnet , 'vgg_unet2':Models.VGGUnet.VGGUnet2 , 'fcn8':Models.FCN8.FCN8 , 'fcn32':Models.FCN32.FCN32, 'segnet':Models.Segnet.segnet, 'segnet_transposed':Models.Segnet_transpose.segnet_transposed, 'segnet_res':Models.Segnet_res.segnet_res, 'segnet_res_crf':Models.Segnet_crf_res.segnet_crf_res}
 modelFN = modelFns[ model_name ]
 
 m = modelFN( n_classes , input_height=input_height, input_width=input_width   )
-m.load_weights(  args.save_weights_path + "." + str(  epoch_number )  )
+m.load_weights(  args.save_weights_path) #+ "." + str(  epoch_number )  )
 m.compile(loss='categorical_crossentropy',
       optimizer= 'sgd' ,
       metrics=['accuracy'])
@@ -44,7 +44,7 @@ images.sort()
 colors = [  ( random.randint(0,255),random.randint(0,255),random.randint(0,255)   ) for _ in range(n_classes)  ]
 
 for imgName in images:
-	print imgName
+	print (imgName)
 	outName = imgName.replace( images_path ,  args.output_path )
 	X = LoadBatches.getImageArr(imgName , args.input_width  , args.input_height  )
 	pr = m.predict( np.array([X]) )[0]
@@ -55,6 +55,6 @@ for imgName in images:
 	#	seg_img[:,:,1] += ((pr[:,: ] == c )*( colors[c][1] )).astype('uint8')
 	#	seg_img[:,:,2] += ((pr[:,: ] == c )*( colors[c][2] )).astype('uint8')
 	#seg_img = cv2.resize(seg_img  , (input_width , input_height ))
-
+	#cv2.waitKey(0)
 	cv2.imwrite(  outName , pr )
 
