@@ -2,6 +2,16 @@ import math
 from keras.callbacks import LearningRateScheduler, ModelCheckpoint
 import argparse
 import Models , LoadBatches
+from Models.Segnet_crf_res import segnet_crf_res
+from Models.VGGSegnet import VGGSegnet
+from Models.VGGUnet import VGGUnet
+from Models.VGGUnet import VGGUnet2
+from Models.FCN8 import FCN8
+from Models.FCN32 import FCN32
+from Models.Segnet import segnet
+from Models.Segnet_transpose import segnet_transposed
+from Models.Segnet_res import segnet_res
+
 
 # learning rate schedule
 def step_decay(epoch):
@@ -54,7 +64,7 @@ if validate:
 	val_segs_path = args.val_annotations
 	val_batch_size = args.val_batch_size
 
-modelFns = { 'vgg_segnet':Models.VGGSegnet.VGGSegnet , 'vgg_unet':Models.VGGUnet.VGGUnet , 'vgg_unet2':Models.VGGUnet.VGGUnet2 , 'fcn8':Models.FCN8.FCN8 , 'fcn32':Models.FCN32.FCN32, 'segnet':Models.Segnet.segnet, 'segnet_transposed':Models.Segnet_transpose.segnet_transposed, 'segnet_res':Models.Segnet_res.segnet_res, 'segnet_res_crf':Models.Segnet_crf_res.segnet_crf_res}
+modelFns = { 'vgg_segnet':VGGSegnet , 'vgg_unet':VGGUnet , 'vgg_unet2':VGGUnet2 , 'fcn8':FCN8 , 'fcn32':FCN32, 'segnet':segnet, 'segnet_transposed':segnet_transposed, 'segnet_res':segnet_res, 'segnet_res_crf':segnet_crf_res}
 modelFN = modelFns[ model_name ]
 
 m = modelFN( n_classes , input_height=input_height, input_width=input_width   )
