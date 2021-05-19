@@ -1,9 +1,11 @@
 # SegNet + CRF as RNN.
 
-This project has the implementation of SegNetResCRF, combination of SegNet with CRF as RNN.
+This project has the implementation of SegNetResCRF, combination of SegNet with CRF as RNN, published in the [2018 IJCNN](https://ieeexplore.ieee.org/xpl/conhome/8465565/proceeding) paper [SegNetRes-CRF: A Deep Convolutional Encoder-Decoder Architecture for Semantic Image Segmentation
+](https://ieeexplore.ieee.org/abstract/document/8489376)
 
-SegNet implementation: https://github.com/divamgupta/image-segmentation-keras
-CRF as RNN implementation: https://github.com/sadeepj/crfasrnn_keras
+Some references:
+* SegNet implementation: https://github.com/divamgupta/image-segmentation-keras
+* CRF as RNN implementation: https://github.com/sadeepj/crfasrnn_keras
 
 ## Repository working tree:
 [![Repo Working Tree](https://raw.githubusercontent.com/laoj2/segnet_crfasrnn/master/github_imgs/segnet_crfasrnn.png)](https://raw.githubusercontent.com/laoj2/segnet_crfasrnn/master/github_imgs/segnet_crfasrnn.png " Repo working tree")
